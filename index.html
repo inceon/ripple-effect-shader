@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+		.images {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		.images span {
+			display: block;
+			cursor: pointer;
+			padding: 3px 7px;
+			margin: 2px 0 0 2px;
+			background: white;
+			border-radius: 10px;
+		}
+		.images span:hover {
+			background: powderblue;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="images"></div>	
+	<div id="container"></div>
+	<script id="vertexShader" type="x-shaider/x-vertex">
+		uniform float time;
+		uniform vec2 resolution;
+		uniform vec2 u_mouse;
+		void main() {
+			gl_Position = vec4(position, 1.0);
+		}
+	</script>
+	<script id="fragmentShader" type="x-shaider/x-fragment">
+		uniform float time;
+		uniform vec2 resolution;
+		uniform vec2 u_mouse;
+		uniform sampler2D texture;
+		uniform float coeff;
+
+		void main() {
+
+			vec2 pos = gl_FragCoord.xy / resolution.xy;	
+			vec2 mouse = u_mouse.xy / resolution.xy;
+
+			float dist = distance(mouse.xy, pos.xy);
+
+			vec2 mPos = -1. + 2. * mouse;
+			vec2 cPos = -1. + 2. * pos - mPos; // normalize from -1 to 1
+			float cLength = length(cPos);
+			vec2 uv = pos+(cPos/cLength*coeff*7.5)*cos(cLength*10.0-time/60.)*(1.-dist)*coeff;
+
+			gl_FragColor = texture2D(texture, uv);
+		}
+	</script>
+
+	<script src="libs/three.min.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<script src="libs/perlin.js"></script>
+	<script src="libs/TweenMax.min.js"></script>
+	<script src="main.js"></script>
+</body>
+</html>
